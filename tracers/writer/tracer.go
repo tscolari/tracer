@@ -5,11 +5,18 @@ import (
 	"io"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
-func New(writer io.Writer) *Tracer {
+func NewRand(writer io.Writer) *Tracer {
+	name := uuid.New().String()
+	return New(name, writer)
+}
+
+func New(name string, writer io.Writer) *Tracer {
 	return &Tracer{
+		name:   name,
 		writer: writer,
 	}
 }
@@ -20,22 +27,14 @@ type Tracer struct {
 	writer io.Writer
 }
 
-func newTracer(id string, writer io.Writer) *Tracer {
+func (t *Tracer) StartSpan(name string) *Tracer {
 	start := time.Now()
 
 	return &Tracer{
-		name:   id,
+		name:   t.name + "." + name,
 		start:  &start,
-		writer: writer,
+		writer: t.writer,
 	}
-}
-
-func (t *Tracer) StartTransaction(id string) {
-	t.name = id
-}
-
-func (t *Tracer) StartSpan(name string) *Tracer {
-	return newTracer(t.name+"."+name, t.writer)
 }
 
 func (t *Tracer) End() error {
@@ -43,7 +42,7 @@ func (t *Tracer) End() error {
 		return errors.New("tracer not initialized")
 	}
 
-	if _, err := t.writer.Write([]byte(traceLine(t.name, *t.start))); err != nil {
+	if _, err := t.writer.Write([]byte(t.traceLine())); err != nil {
 		return errors.Wrap(err, "writing trace line")
 	}
 
@@ -58,6 +57,6 @@ func (t *Tracer) StartedAt() time.Time {
 	return *t.start
 }
 
-func traceLine(name string, started time.Time) string {
-	return fmt.Sprintf("%s: %d\n", name, time.Since(started).Nanoseconds())
+func (t *Tracer) traceLine() string {
+	return fmt.Sprintf("%s: %d\n", t.name, time.Since(*t.start).Nanoseconds())
 }

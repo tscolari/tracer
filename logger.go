@@ -1,11 +1,12 @@
 package tracer
 
-import "code.cloudfoundry.org/lager"
+import (
+	"code.cloudfoundry.org/lager"
+)
 
 //go:generate counterfeiter code.cloudfoundry.org/lager.Logger
 
 func NewLogger(logger lager.Logger, tracer Tracer) *Logger {
-	tracer.StartTransaction("hello")
 	return &Logger{
 		logger: logger,
 		tracer: tracer,

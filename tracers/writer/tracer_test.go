@@ -15,13 +15,13 @@ var _ = Describe("Writer", func() {
 	var (
 		tracer *writer.Tracer
 		buffer *gbytes.Buffer
+		id     string
 	)
 
 	BeforeEach(func() {
 		buffer = gbytes.NewBuffer()
-		tracer = writer.New(buffer)
-
-		tracer.StartTransaction("test")
+		id = "id-1"
+		tracer = writer.New(id, buffer)
 	})
 
 	It("writes the transaction time", func() {
@@ -29,7 +29,7 @@ var _ = Describe("Writer", func() {
 		time.Sleep(2 * time.Millisecond)
 		Expect(spanTracer.End()).To(Succeed())
 
-		Expect(buffer).To(gbytes.Say("test.hello-world:"))
+		Expect(buffer).To(gbytes.Say("id-1.hello-world:"))
 
 		parts := strings.Split(string(buffer.Contents()), " ")
 		Expect(parts).To(HaveLen(2))
@@ -49,8 +49,8 @@ var _ = Describe("Writer", func() {
 		spanTracer3.End()
 		spanTracer1.End()
 
-		Expect(buffer).To(gbytes.Say("test.event1.event2:"))
-		Expect(buffer).To(gbytes.Say("test.event1.event2.event3:"))
-		Expect(buffer).To(gbytes.Say("test.event1:"))
+		Expect(buffer).To(gbytes.Say("id-1.event1.event2:"))
+		Expect(buffer).To(gbytes.Say("id-1.event1.event2.event3:"))
+		Expect(buffer).To(gbytes.Say("id-1.event1:"))
 	})
 })

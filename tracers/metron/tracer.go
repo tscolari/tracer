@@ -7,8 +7,10 @@ import (
 	"github.com/cloudfoundry/dropsonde/metrics"
 )
 
-func New() *Tracer {
-	return &Tracer{}
+func New(name string) *Tracer {
+	return &Tracer{
+		name: name,
+	}
 }
 
 type Tracer struct {
@@ -23,10 +25,6 @@ func newTracer(id string) *Tracer {
 		name:  id,
 		start: &start,
 	}
-}
-
-func (t *Tracer) StartTransaction(id string) {
-	t.name = id
 }
 
 func (t *Tracer) StartSpan(name string) *Tracer {
