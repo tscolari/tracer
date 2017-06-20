@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cloudfoundry/dropsonde/metrics"
+	"github.com/tscolari/tracer"
 )
 
 func New(name string) *Tracer {
@@ -27,7 +28,7 @@ func newTracer(id string) *Tracer {
 	}
 }
 
-func (t *Tracer) StartSpan(name string) *Tracer {
+func (t *Tracer) StartSpan(name string) tracer.Tracer {
 	return newTracer(t.name + "." + name)
 }
 

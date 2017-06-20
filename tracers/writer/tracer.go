@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/tscolari/tracer"
 )
 
 func NewRand(writer io.Writer) *Tracer {
@@ -27,7 +28,7 @@ type Tracer struct {
 	writer io.Writer
 }
 
-func (t *Tracer) StartSpan(name string) *Tracer {
+func (t *Tracer) StartSpan(name string) tracer.Tracer {
 	start := time.Now()
 
 	return &Tracer{

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	ot "github.com/opentracing/opentracing-go"
+	"github.com/tscolari/tracer"
 )
 
 //go:generate counterfeiter github.com/opentracing/opentracing-go.Span
@@ -35,7 +36,7 @@ func NewFromContext(ctx context.Context, name string) *Tracer {
 	}
 }
 
-func (t *Tracer) StartSpan(name string) *Tracer {
+func (t *Tracer) StartSpan(name string) tracer.Tracer {
 	span := t.tracer.StartSpan(name, ot.ChildOf(t.span.Context()))
 
 	return &Tracer{
